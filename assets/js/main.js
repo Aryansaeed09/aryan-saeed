@@ -47,6 +47,50 @@
   });
   //Wow Animation
   new WOW().init();
+
+  // Auto-apply AOS attributes to sections and common blocks, then init AOS
+  $(function () {
+    try {
+      var selectors = [
+        "section",
+        "#header",
+        "footer",
+        ".single-featured-item-wrap",
+        ".single-service",
+        ".single-portfolio",
+        ".single-faq",
+        ".single-blog",
+        ".single-testimonial",
+        ".single-team",
+        ".single-price-box",
+        ".floating-social-contact",
+        "#contact-form",
+      ];
+
+      selectors.forEach(function (sel) {
+        document.querySelectorAll(sel).forEach(function (el, idx) {
+          if (!el.hasAttribute("data-aos")) {
+            // Stagger animations slightly for repeat items
+            var defaultType =
+              sel === "section" || sel === "#header" || sel === "footer"
+                ? "fade-up"
+                : "zoom-in";
+            el.setAttribute("data-aos", defaultType);
+          }
+          if (!el.hasAttribute("data-aos-duration")) {
+            el.setAttribute("data-aos-duration", "700");
+          }
+        });
+      });
+
+      if (typeof AOS !== "undefined") {
+        AOS.init({ duration: 800, once: true });
+      }
+    } catch (e) {
+      // fail silently if AOS isn't available
+      console.warn("AOS auto-apply failed:", e);
+    }
+  });
   /*==========================
         Hero Title typer
     ============================*/
