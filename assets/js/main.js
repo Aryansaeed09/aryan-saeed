@@ -53,7 +53,6 @@
     try {
       var selectors = [
         "section",
-        "#header",
         "footer",
         ".single-featured-item-wrap",
         ".single-service",
@@ -72,9 +71,7 @@
           if (!el.hasAttribute("data-aos")) {
             // Stagger animations slightly for repeat items
             var defaultType =
-              sel === "section" || sel === "#header" || sel === "footer"
-                ? "fade-up"
-                : "zoom-in";
+              sel === "section" || sel === "footer" ? "fade-up" : "zoom-in";
             el.setAttribute("data-aos", defaultType);
           }
           if (!el.hasAttribute("data-aos-duration")) {
@@ -195,5 +192,36 @@
     ::::::::::::::::::::::::::::::::::::*/
   $(window).on("load", function () {
     $(".preloader").fadeOut();
+  });
+
+  /*:::::::::::::::::::::::::::::::::::
+            Navbar Area
+    :::::::::::::::::::::::::::::::::::*/
+
+  // Navbar Sticky
+  $(window).scroll(function () {
+    var scroll = $(window).scrollTop();
+
+    if (scroll >= 1) {
+      $(".navbar").addClass("bg-primari");
+    } else {
+      $(".navbar").removeClass("bg-primari");
+    }
+  });
+
+  //Smoth Scroll
+  $(function () {
+    $(".nav-link, .smoth-scroll").on("click", function (event) {
+      var $anchor = $(this);
+      $("html, body")
+        .stop()
+        .animate(
+          {
+            scrollTop: $($anchor.attr("href")).offset().top - 0,
+          },
+          1000,
+        );
+      event.preventDefault();
+    });
   });
 })(jQuery);
