@@ -136,38 +136,72 @@
   });
 
   /*::::::::::::::::::::::::::::::::::::
-       Contact Area 
+      Contact Form
     ::::::::::::::::::::::::::::::::::::*/
-  var form = $("#contact-form");
 
-  var formMessages = $(".form-message");
-  $(form).submit(function (e) {
-    e.preventDefault();
-    var formData = $(form).serialize();
-    $.ajax({
-      type: "POST",
-      url: $(form).attr("action"),
-      data: formData,
-    })
-      .done(function (response) {
-        $(formMessages).removeClass("error");
-        $(formMessages).addClass("success");
-        $(formMessages).text(response);
+  $(document).ready(function () {
+    $("#contact-form").on("submit", function (e) {
+      e.preventDefault();
 
-        $("#contact-form input,#contact-form textarea").val("");
-      })
-      .fail(function (data) {
-        $(formMessages).removeClass("success");
-        $(formMessages).addClass("error");
+      var $form = $(this);
+      var $submitBtn = $form.find('button[type="submit"]');
+      var $messageBox = $(".form-message");
 
-        if (data.responseText !== "") {
-          $(formMessages).text(data.responseText);
-        } else {
-          $(formMessages).text(
-            "Oops! An error occured and your message could not be sent.",
-          );
-        }
+      $submitBtn
+        .prop("disabled", true)
+        .html(
+          '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...',
+        );
+
+      $.ajax({
+        type: "POST",
+        url: $form.attr("action"),
+        data: $form.serialize(),
+        dataType: "json",
+        headers: {
+          Accept: "application/json",
+        },
+        success: function (response) {
+          // Success Message with Close Button
+          var successHTML =
+            '<div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 20px; border-left: 5px solid #28a745;">' +
+            "<strong>Success!</strong> Your message has been sent successfully. We will get back to you shortly. Thank you!" +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="float:right; background:none; border:none; font-size:20px; cursor:pointer;">&times;</button>' +
+            "</div>";
+
+          $messageBox.html(successHTML);
+          $form[0].reset();
+
+          // 10 سیکنڈ بعد خود بخود ہٹانے کے لیے
+          setTimeout(function () {
+            $messageBox.find(".alert").fadeOut();
+          }, 10000);
+        },
+        error: function (error) {
+          // Error Message with Close Button
+          var errorHTML =
+            '<div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 20px; border-left: 5px solid #dc3545;">' +
+            "<strong>Error!</strong> Something went wrong. Please check your connection and try again." +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="float:right; background:none; border:none; font-size:20px; cursor:pointer;">&times;</button>' +
+            "</div>";
+
+          $messageBox.html(errorHTML);
+
+          // 10 سیکنڈ بعد خود بخود ہٹانے کے لیے
+          setTimeout(function () {
+            $messageBox.find(".alert").fadeOut();
+          }, 10000);
+        },
+        complete: function () {
+          $submitBtn.prop("disabled", false).text("Send Message");
+        },
       });
+    });
+
+    // کراس بٹن پر کلک کرنے سے الرٹ ختم کرنے کے لیے
+    $(document).on("click", ".btn-close", function () {
+      $(this).parent().fadeOut();
+    });
   });
 
   /*::::::::::::::::::::::::::::::::::::
